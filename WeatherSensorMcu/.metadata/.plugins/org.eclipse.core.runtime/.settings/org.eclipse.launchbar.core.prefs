@@ -1,0 +1,11 @@
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/name=Local
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=win32
+configDescList=org.eclipse.launchbar.core.descriptorType.default\:iButtonProcessor.elf,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:HelloWorld Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:LCD1602A_Driver Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:UsbHidExample Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:iButtonUartProcessor Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:WeatherSensor Debug
+eclipse.preferences.version=1
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:HelloWorld\ Debug/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:HelloWorld\ Debug/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:iButtonUartProcessor\ Debug/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:iButtonUartProcessor\ Debug/activeLaunchTarget=null\:---
+org.eclipse.launchbar.core.descriptorType.default\:iButtonProcessor.elf/activeLaunchMode=run
+org.eclipse.launchbar.core.descriptorType.default\:iButtonProcessor.elf/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local
