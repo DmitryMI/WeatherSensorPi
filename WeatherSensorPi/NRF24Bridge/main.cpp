@@ -32,14 +32,49 @@ TMRh20 2014 - Updated to work with optimized RF24 Arduino library
 #include <RF24/RF24.h>
 
 #include "shockBurst.h"
+#include "sserver.h"
+#include "WeatherSensor.h"
+
+#define POLL_PERIOD_SEC 10
 
 using namespace std;
 
+SServer* server;
+
+void sensor_received(int pipe, uint8_t *data, int size)
+{
+    uint8_t* package = new uint8_t[size + 1];
+    package[0] = (uint8_t)pipe;
+
+	for(int i = 0; i < size; i++)
+	{
+        package[i + 1] = data[i];
+	}
+    server->sendDataToAll(package, size + 1);
+
+    delete[] package;
+}
+
 int main()
 {
-	printf("Shit happens :)\n");
+    //shockBurst(false, false);
+    //return 0;
 	
-	shockBurst(false, true);
+    server = new SServer(3001);
+    server->startServer();
+
+    WeatherSensor* sensor = new WeatherSensor(sensor_received);
+
+	while(true)
+	{
+        printf("Polling connections...\n");
+        server->pollConnections();
+
+        printf("Polling radio...\n");
+        sensor->pollRadio();
+
+        sleep(POLL_PERIOD_SEC);
+	}
 
 	getchar();
 }

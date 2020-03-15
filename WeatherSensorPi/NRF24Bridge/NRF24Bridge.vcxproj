@@ -81,10 +81,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="noise.cpp" />
     <ClCompile Include="shockBurst.cpp" />
+    <ClCompile Include="sserver.cpp" />
+    <ClCompile Include="WeatherSensor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="noise.h" />
     <ClInclude Include="shockBurst.h" />
+    <ClInclude Include="sserver.h" />
+    <ClInclude Include="WeatherSensor.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>

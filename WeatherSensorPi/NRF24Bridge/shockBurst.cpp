@@ -51,7 +51,7 @@ uint8_t pipesAddress[6][5] = {
 
 };
 
-RF24* init_rf(int ce, int csn, int mode)
+RF24* init_rf(uint16_t ce, uint16_t csn, int mode)
 {
 	RF24* radio = new RF24(ce, csn);
 
@@ -71,7 +71,7 @@ RF24* init_rf(int ce, int csn, int mode)
 	{
 		for (int i = 0; i < 6; i++)
 		{
-			radio->openReadingPipe(i, pipesAddress[i]);
+			radio->openReadingPipe((uint8_t)i, pipesAddress[i]);
 		}
 	}
 	else
@@ -128,7 +128,7 @@ void shockBurst(bool selfTransmitterEnabled, bool useTextFormat)
 		{
 			for (uint8_t i = 0; i < payloadSize; i++)
 			{
-				data[i] = 'a' + i;
+				data[i] = 'a' + (uint8_t)i;
 			}
 			printf("Sending: ");
 			for (uint8_t i = 0; i < payloadSize; i++)
