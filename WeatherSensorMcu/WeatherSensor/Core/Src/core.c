@@ -28,6 +28,15 @@ void error_handler(int code)
 
 }
 
+void RTC_IRQHandler()
+{
+	if(RTC->ISR & RTC_ISR_ALRAF)
+	{
+		// Alarm interrupt appeared
+		RTC->ISR &= !(RTC_ISR_ALRAF);
+	}
+}
+
 uint64_t arr2uint(uint8_t *arr, int length)
 {
 	uint64_t result = 0;
@@ -41,29 +50,26 @@ uint64_t arr2uint(uint8_t *arr, int length)
 
 int nrf24_setup()
 {
-	return 0;
+	//return 0;
 
 	int res = nrf_init(&hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin, SPI1_CE_GPIO_Port, SPI1_CE_Pin); // инициализация
 	if(res > 0 && res < 255)
 	{
-
+		uint8_t addr[] = NRF24_ADDRESS;
+			uint64_t addr64 = arr2uint(addr, sizeof(addr));
+			nrf_openWritingPipe(addr64);
+			nrf_setChannel(NRF24_CHANNEL);
+			nrf_enableDynamicPayloads();
+			return 0;
 	}
-	else
-	{
-		return -1;
-	}
 
-	uint8_t addr[] = NRF24_ADDRESS;
-	uint64_t addr64 = arr2uint(addr, sizeof(addr));
-	nrf_openWritingPipe(addr64);
-	nrf_setChannel(NRF24_CHANNEL);
-	nrf_enableDynamicPayloads();
-
-	return 0;
+	return -1;
 }
 
 int nrf24_send(uint8_t *data, int length)
 {
+	//return 0;
+
 	if(nrf_write(data, length))
 	{
 		return 0;
@@ -72,6 +78,13 @@ int nrf24_send(uint8_t *data, int length)
 	{
 		return -1;
 	}
+}
+
+int nrf_disable()
+{
+	//return 0;
+	nrf_powerDown();
+	return 0;
 }
 
 int get_weather_data(uint16_t *temp, uint16_t *humidity, int32_t *pressure)
@@ -119,11 +132,11 @@ void enter_sleep()
 	for(int i = 0; i < 3; i++)
 	{
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-		delay_us(500000);
+		delay_ms(500);
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-		delay_us(500000);
+		delay_ms(500);
 	}
-	//HAL_PWR_EnterSTANDBYMode();
+	HAL_PWR_EnterSTANDBYMode();
 }
 
 void start()
@@ -179,7 +192,7 @@ void start()
 	}
 
 exit:
-	nrf_powerDown();
+	nrf_disable();
 	enter_sleep();
 }
 

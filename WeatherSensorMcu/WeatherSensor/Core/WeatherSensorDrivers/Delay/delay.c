@@ -19,10 +19,27 @@ void delay_init(TIM_HandleTypeDef *htim)
 	HAL_TIM_Base_Start(htim);
 }
 
-void delay_us(uint32_t us) // DelayMicro
+void delay_us(uint16_t us) // DelayMicro
 {
 	__HAL_TIM_SET_COUNTER(delay_htim,0);  // set the counter value a 0
-	while (__HAL_TIM_GET_COUNTER(delay_htim) < us);
+	while (1)
+	{
+		uint32_t cnt = __HAL_TIM_GET_COUNTER(delay_htim);
+		uint32_t us32 = (uint32_t)us;
+		int isBigger = cnt >= us32;
+		if(isBigger)
+		{
+			break;
+		}
+	}
+}
+
+void delay_ms(uint16_t ms)
+{
+	for(int i = 0; i < ms; i++)
+	{
+		delay_us(ms);
+	}
 }
 
 void delay_start()

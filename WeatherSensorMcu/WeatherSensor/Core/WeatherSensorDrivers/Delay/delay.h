@@ -11,7 +11,10 @@
 #include <inttypes.h>
 
 void delay_init(TIM_HandleTypeDef *htim);
-void delay_us(uint32_t us); // DelayMicro
+
+void delay_us(uint16_t us);
+
+void delay_ms(uint16_t ms);
 
 void delay_start();
 
