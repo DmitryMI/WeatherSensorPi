@@ -353,7 +353,6 @@ MigrationBackup/
 .ionide/
 
 # STM32Cube
-**/.metadata/
 WeatherSensorMcu/*/Drivers/*
 **/MDK-ARM/*
 **/EWARM/*
@@ -363,7 +362,3 @@ WeatherSensorMcu/*/Drivers/*
 
 *.o
 .mxproject
-WeatherSensorMcu/.metadata/.plugins/org.eclipse.core.resources/.safetable/org.eclipse.core.resources
-WeatherSensorMcu/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.ui.ide.prefs
-WeatherSensorMcu/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi
-WeatherSensorMcu/.metadata/.plugins/org.eclipse.ui.workbench/dialog_settings.xml
