@@ -351,3 +351,15 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# STM32Cube
+**/.metadata/
+WeatherSensorMcu/*/Drivers/*
+**/MDK-ARM/*
+**/EWARM/*
+# CrossWorks project files
+!*/*.hzp
+!*/*.hzs
+
+*.o
+.mxproject
