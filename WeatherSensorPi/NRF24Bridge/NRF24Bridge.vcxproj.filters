@@ -6,11 +6,13 @@
     <ClCompile Include="shockBurst.cpp" />
     <ClCompile Include="sserver.cpp" />
     <ClCompile Include="WeatherSensor.cpp" />
+    <ClCompile Include="daemonize.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="noise.h" />
     <ClInclude Include="shockBurst.h" />
     <ClInclude Include="sserver.h" />
     <ClInclude Include="WeatherSensor.h" />
+    <ClInclude Include="daemonize.h" />
   </ItemGroup>
 </Project>

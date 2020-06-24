@@ -28,9 +28,11 @@ TMRh20 2014 - Updated to work with optimized RF24 Arduino library
 #include <unistd.h>
 #include <chrono>
 #include <ctime>
+#include <syslog.h>
 
 #include <RF24/RF24.h>
 
+#include "daemonize.h"
 #include "shockBurst.h"
 #include "sserver.h"
 #include "WeatherSensor.h"
@@ -65,12 +67,29 @@ int main()
 
     WeatherSensor* sensor = new WeatherSensor(sensor_received);
 
+	printf("WeatherSensorPi started!\n");
+
+#ifdef RUN_AS_DAEMON
+	printf("Daemonizing...\n");
+	daemonize("WeatherSensorPi");
+
+	if (already_running() != 0)
+	{
+		syslog(LOG_ERR, "Daemon is already running\n");
+		exit(1);
+	}
+
+	syslog(LOG_WARNING, "Daemon started sucessfully");
+#else
+	printf("Daemonizing skipped\n");
+#endif
+
 	while(true)
 	{
-        printf("Polling connections...\n");
+		syslog(LOG_INFO, "Polling connections...\n");
         server->pollConnections();
 
-        printf("Polling radio...\n");
+		syslog(LOG_INFO, "Polling radio...\n");
         sensor->pollRadio();
 
         sleep(POLL_PERIOD_SEC);

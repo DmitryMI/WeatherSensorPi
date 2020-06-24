@@ -78,6 +78,7 @@
     <ProjectPublicIncludePath>C:\Users\Dmitry\Documents\GitHub\WeatherSensorPi\WeatherSensorPi\NRF24Bridge\RF24;$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
   </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="daemonize.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="noise.cpp" />
     <ClCompile Include="shockBurst.cpp" />
@@ -85,6 +86,7 @@
     <ClCompile Include="WeatherSensor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="daemonize.h" />
     <ClInclude Include="noise.h" />
     <ClInclude Include="shockBurst.h" />
     <ClInclude Include="sserver.h" />
