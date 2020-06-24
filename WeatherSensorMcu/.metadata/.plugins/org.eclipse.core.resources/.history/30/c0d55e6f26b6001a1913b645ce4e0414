@@ -1,0 +1,202 @@
+/*
+ * core.c
+ *
+ *  Created on: Mar 21, 2020
+ *      Author: Dmitry
+ */
+
+
+#include "main.h"
+#include "core.h"
+
+#include "RF24/RF24.h"
+#include "BMP180/bmp180.h"
+#include "AM2320/am2320.h"
+#include "Delay/delay.h"
+
+#define NRF24_CHANNEL 0x05
+#define NRF24_ADDRESS {'0', 'P', 'I', 'P', 'E'}
+
+#define NRF24_INIT_ERROR 10
+#define BMP180_INIT_ERROR 20
+#define AM2320_INIT_ERROR 30
+#define WEATHER_READING_ERROR 40
+#define NRF24_TRANSMITTION_ERROR 50
+
+void error_handler(int code)
+{
+
+}
+
+void RTC_IRQHandler()
+{
+	if(RTC->ISR & RTC_ISR_ALRAF)
+	{
+		// Alarm interrupt appeared
+		RTC->ISR &= !(RTC_ISR_ALRAF);
+	}
+}
+
+uint64_t arr2uint(uint8_t *arr, int length)
+{
+	uint64_t result = 0;
+	for(int i = length - 1; i >= 0; i--)
+	{
+		result = result << 8;
+		result += arr[i];
+	}
+	return result;
+}
+
+int nrf24_setup()
+{
+	//return 0;
+
+	int res = nrf_init(&hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin, SPI1_CE_GPIO_Port, SPI1_CE_Pin); // инициализация
+	if(res > 0 && res < 255)
+	{
+		uint8_t addr[] = NRF24_ADDRESS;
+			uint64_t addr64 = arr2uint(addr, sizeof(addr));
+			nrf_openWritingPipe(addr64);
+			nrf_setChannel(NRF24_CHANNEL);
+			nrf_enableDynamicPayloads();
+			return 0;
+	}
+
+	return -1;
+}
+
+int nrf24_send(uint8_t *data, int length)
+{
+	//return 0;
+
+	if(nrf_write(data, length))
+	{
+		return 0;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+int nrf_disable()
+{
+	//return 0;
+	nrf_powerDown();
+	return 0;
+}
+
+int get_weather_data(uint16_t *temp, uint16_t *humidity, int32_t *pressure)
+{
+	am2320_data_t am2320_data = {0};
+	bmp180_data_t bmp180_data = {0};
+	am2320_result_t am2320_result = am2320_read(&am2320_data);
+	bmp180_result_t bmp180_result;
+
+	bmp180_result = bmp180_read(&bmp180_data);
+
+	int32_t filt = bmp180_data.pressure;
+
+	if(am2320_result != AM2320_OK)
+	{
+		return -1;
+	}
+	if(bmp180_result != BMP180_OK)
+	{
+		return -1;
+	}
+
+	*temp = am2320_data.temperature;
+	*humidity = am2320_data.humidity;
+	*pressure = filt;
+
+
+	return 0;
+}
+
+void clear_standby()
+{
+	PWR->CR |= (1 << 3);
+	HAL_Delay(1);
+}
+
+void clear_wakeup()
+{
+	PWR->CR |= (1 << 2);
+	HAL_Delay(1);
+}
+
+void enter_sleep()
+{
+	for(int i = 0; i < 3; i++)
+	{
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+		delay_ms(500);
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+		delay_ms(500);
+	}
+	HAL_PWR_EnterSTANDBYMode();
+}
+
+void start()
+{
+	clear_standby();
+	clear_wakeup();
+
+	delay_init(&htim17);
+
+	if(nrf24_setup())
+	{
+		error_handler(NRF24_INIT_ERROR);
+		//goto exit;
+	}
+
+	am2320_init(&hi2c1);
+
+	if(bmp180_init(&hi2c1) != BMP180_OK)
+	{
+		error_handler(BMP180_INIT_ERROR);
+		//goto exit;
+	}
+
+	uint16_t temp;
+	uint16_t humidity;
+	int32_t pressure;
+
+	int reading_error = get_weather_data(&temp, &humidity, &pressure);
+	if(reading_error)
+	{
+		error_handler(WEATHER_READING_ERROR);
+	}
+	else
+	{
+		uint8_t sensor_data[8];
+		sensor_data[1] = temp >> 8;
+		sensor_data[0] = temp;
+		sensor_data[3] = humidity >> 8;
+		sensor_data[2] = humidity;
+		sensor_data[7] = pressure >> 24;
+		sensor_data[6] = pressure >> 16;
+		sensor_data[5] = pressure >> 8;
+		sensor_data[4] = pressure;
+
+		if(nrf24_send(sensor_data, 8) == 0)
+		{
+			// Ok
+		}
+		else
+		{
+			error_handler(NRF24_TRANSMITTION_ERROR);
+		}
+	}
+
+exit:
+	nrf_disable();
+	enter_sleep();
+}
+
+void update()
+{
+	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+}
