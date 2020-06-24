@@ -40,7 +40,7 @@ void error_handler(int code)
 	switch(code)
 	{
 	case 0:
-		blink_led(100, 200, 3);
+		blink_led(100, 200, 1);
 		break;
 
 	case NRF24_INIT_ERROR:
@@ -48,11 +48,11 @@ void error_handler(int code)
 		break;
 
 	case BMP180_INIT_ERROR:
-		blink_led(500, 200, 3);
+		blink_led(100, 200, 3);
 		break;
 
 	case WEATHER_READING_ERROR:
-		blink_led(500, 200, 3);
+		blink_led(100, 200, 3);
 		break;
 
 	case NRF24_TRANSMITTION_ERROR:
@@ -165,8 +165,6 @@ void clear_wakeup()
 
 void enter_sleep()
 {
-	HAL_Delay(3000); // To ensure that debugger has time to connect
-
 	HAL_PWR_EnterSTANDBYMode();
 }
 

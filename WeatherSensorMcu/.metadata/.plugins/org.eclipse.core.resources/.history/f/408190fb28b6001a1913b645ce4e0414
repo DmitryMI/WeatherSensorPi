@@ -165,8 +165,6 @@ void clear_wakeup()
 
 void enter_sleep()
 {
-	HAL_Delay(3000); // To ensure that debugger has time to connect
-
 	HAL_PWR_EnterSTANDBYMode();
 }
 

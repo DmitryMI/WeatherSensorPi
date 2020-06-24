@@ -23,45 +23,9 @@
 #define WEATHER_READING_ERROR 40
 #define NRF24_TRANSMITTION_ERROR 50
 
-void blink_led(int ms_on, int ms_off, int times)
-{
-	for(int i = 0; i < times; i++)
-	{
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-		delay_ms(ms_on);
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-		delay_ms(ms_off);
-	}
-}
-
-
 void error_handler(int code)
 {
-	switch(code)
-	{
-	case 0:
-		blink_led(100, 200, 3);
-		break;
 
-	case NRF24_INIT_ERROR:
-		blink_led(1000, 200, 2);
-		break;
-
-	case BMP180_INIT_ERROR:
-		blink_led(500, 200, 3);
-		break;
-
-	case WEATHER_READING_ERROR:
-		blink_led(500, 200, 3);
-		break;
-
-	case NRF24_TRANSMITTION_ERROR:
-		blink_led(3000, 200, 1);
-		break;
-
-	default:
-		blink_led(10000, 1000, 3);
-	}
 }
 
 void RTC_IRQHandler()
@@ -92,11 +56,11 @@ int nrf24_setup()
 	if(res > 0 && res < 255)
 	{
 		uint8_t addr[] = NRF24_ADDRESS;
-		uint64_t addr64 = arr2uint(addr, sizeof(addr));
-		nrf_openWritingPipe(addr64);
-		nrf_setChannel(NRF24_CHANNEL);
-		nrf_enableDynamicPayloads();
-		return 0;
+			uint64_t addr64 = arr2uint(addr, sizeof(addr));
+			nrf_openWritingPipe(addr64);
+			nrf_setChannel(NRF24_CHANNEL);
+			nrf_enableDynamicPayloads();
+			return 0;
 	}
 
 	return -1;
@@ -165,8 +129,13 @@ void clear_wakeup()
 
 void enter_sleep()
 {
-	HAL_Delay(3000); // To ensure that debugger has time to connect
-
+	for(int i = 0; i < 3; i++)
+	{
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+		delay_ms(500);
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+		delay_ms(500);
+	}
 	HAL_PWR_EnterSTANDBYMode();
 }
 
