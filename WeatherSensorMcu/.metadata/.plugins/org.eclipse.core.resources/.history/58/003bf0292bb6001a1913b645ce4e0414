@@ -71,7 +71,6 @@ void RTC_IRQHandler()
 		// Alarm interrupt appeared
 		RTC->ISR &= !(RTC_ISR_ALRAF);
 	}
-
 }
 
 uint64_t arr2uint(uint8_t *arr, int length)
