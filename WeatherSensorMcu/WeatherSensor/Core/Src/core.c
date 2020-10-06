@@ -132,22 +132,21 @@ int get_weather_data(uint16_t *temp, uint16_t *humidity, int32_t *pressure)
 	bmp180_result_t bmp180_result;
 
 	bmp180_result = bmp180_read(&bmp180_data);
-
-	int32_t filt = bmp180_data.pressure;
-
-	if(am2320_result != AM2320_OK)
+	if(bmp180_result != BMP180_OK)
 	{
 		return -1;
 	}
-	if(bmp180_result != BMP180_OK)
+
+	int32_t filt = bmp180_data.pressure;
+	*pressure = filt;
+
+	if(am2320_result != AM2320_OK)
 	{
 		return -1;
 	}
 
 	*temp = am2320_data.temperature;
 	*humidity = am2320_data.humidity;
-	*pressure = filt;
-
 
 	return 0;
 }
