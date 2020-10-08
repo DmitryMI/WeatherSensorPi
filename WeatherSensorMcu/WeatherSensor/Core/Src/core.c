@@ -5,6 +5,8 @@
  *      Author: Dmitry
  */
 
+#define USE_ERROR_HANDLER 1
+
 
 #include "main.h"
 #include "core.h"
@@ -35,8 +37,10 @@ void blink_led(int ms_on, int ms_off, int times)
 }
 
 
+
 void error_handler(int code)
 {
+#if USE_ERROR_HANDLER == 1
 	switch(code)
 	{
 	case 0:
@@ -62,14 +66,19 @@ void error_handler(int code)
 	default:
 		blink_led(10000, 1000, 3);
 	}
+
+#endif
 }
+
+
 
 void RTC_IRQHandler()
 {
+	__HAL_GPIO_EXTI_CLEAR_IT((1 << 17));
 	if(RTC->ISR & RTC_ISR_ALRAF)
 	{
 		// Alarm interrupt appeared
-		RTC->ISR &= !(RTC_ISR_ALRAF);
+		RTC->ISR &= ~(RTC_ISR_ALRAF);
 	}
 
 }
@@ -212,7 +221,9 @@ void start()
 		sensor_data[5] = pressure >> 8;
 		sensor_data[4] = pressure;
 
-		if(nrf24_send(sensor_data, 8) == 0)
+		int sending_result = nrf24_send(sensor_data, 8);
+
+		if(sending_result == 0)
 		{
 			// Ok
 		}
