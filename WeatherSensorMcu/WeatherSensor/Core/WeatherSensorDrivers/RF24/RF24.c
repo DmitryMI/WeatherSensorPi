@@ -402,11 +402,24 @@ bool nrf_write(const void* buf, uint8_t len)
 {
 	nrf_startFastWrite(buf, len, 1, 1);
 
+	uint8_t status;
+
+	while(1)
+	{
+		status = nrf_get_status();
+		int data_transmitted = status & (1 << TX_DS);
+		int max_retries_reached = status & (1 << MAX_RT);
+		if(data_transmitted || max_retries_reached)
+		{
+			break;
+		}
+	}
+	/*
 	while(!(nrf_get_status() & ((1 << TX_DS) | (1 << MAX_RT))))
 	{}
-
+	 */
 	nrf_ce(LOW);
-	uint8_t status = nrf_write_register(NRF_STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
+	status = nrf_write_register(NRF_STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
 
 	if(status & (1 << MAX_RT))
 	{
