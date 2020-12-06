@@ -109,6 +109,8 @@ int nrf24_setup()
 		return 0;
 	}
 
+	nrf_setRetries(0, 0);
+
 	return -1;
 }
 
@@ -128,7 +130,6 @@ int nrf24_send(uint8_t *data, int length)
 
 int nrf_disable()
 {
-	//return 0;
 	nrf_powerDown();
 	return 0;
 }
@@ -176,6 +177,7 @@ void enter_sleep()
 {
 	HAL_Delay(3000); // To ensure that debugger has time to connect
 
+	HAL_SuspendTick();
 	HAL_PWR_EnterSTANDBYMode();
 }
 

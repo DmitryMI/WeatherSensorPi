@@ -381,7 +381,16 @@ void nrf_stopListening(void)
 void nrf_powerDown(void)
 {
 	nrf_ce(LOW); // Guarantee nrf_ce is low on powerDown
-	nrf_write_register(NRF_CONFIG, nrf_read_register(NRF_CONFIG) & ~(1 << PWR_UP));
+
+	//nrf_write_register(NRF_CONFIG, nrf_read_register(NRF_CONFIG) & ~(1 << PWR_UP));
+	uint8_t cfg = nrf_read_register(NRF_CONFIG);
+		// if not powered up then power up and wait for the radio to initialize
+	if(cfg & (1 << PWR_UP))
+	{
+		nrf_write_register(NRF_CONFIG, cfg & ~(1 << PWR_UP));
+		HAL_Delay(5);
+		cfg = nrf_read_register(NRF_CONFIG);
+	}
 }
 
 //Power up now. Radio will not power down unless instructed by MCU for config changes etc.
@@ -404,6 +413,7 @@ bool nrf_write(const void* buf, uint8_t len)
 
 	uint8_t status;
 
+	/*
 	while(1)
 	{
 		status = nrf_get_status();
@@ -414,10 +424,11 @@ bool nrf_write(const void* buf, uint8_t len)
 			break;
 		}
 	}
-	/*
+	*/
+
 	while(!(nrf_get_status() & ((1 << TX_DS) | (1 << MAX_RT))))
 	{}
-	 */
+
 	nrf_ce(LOW);
 	status = nrf_write_register(NRF_STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
 
